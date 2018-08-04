@@ -3,8 +3,11 @@ from django.test import TestCase
 from django.utils import timezone
 from django.utils.six import StringIO
 from django.db.models import DateField
+
+from management.commands._sii_rates_scrapper import year_generator, rate_generator
+
 from .models import ClpUsdRate
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import decimal
 
 
@@ -39,10 +42,9 @@ class TestClpUsdRate(TestCase):
         self.assertAlmostEqual(dic_31_2017.usd_to_clp(0.5), decimal.Decimal(615.22/2), delta=decimal.Decimal(0.01))
 
 
-
 class TestUpdateRates(TestCase):
 
-        def test_command_output(self):
-            out = StringIO()
-            call_command('updaterates', stdout=out)
-            self.assertIn('Successfully updated rates', out.getvalue())
+    def test_command_output(self):
+        out = StringIO()
+        call_command('updaterates', stdout=out)
+        self.assertIn('Successfully updated rates!', out.getvalue())
