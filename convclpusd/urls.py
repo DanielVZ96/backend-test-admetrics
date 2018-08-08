@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import dolares_a_pesos, pesos_a_dolares
+from .views import ClpToUsd, UsdToClp
 
 urlpatterns = [
-    path('clp', dolares_a_pesos, name='clp'),
-    path('usd', pesos_a_dolares, name='usd'),
+    path('clp', UsdToClp.as_view(), name='clp'),
+    path('usd', ClpToUsd.as_view(), name='usd'),
 ]

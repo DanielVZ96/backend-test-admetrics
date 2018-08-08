@@ -8,7 +8,7 @@ class ClpUsdRate(models.Model):
     usd_rate = models.DecimalField(max_digits=10, decimal_places=4, null=True)  # CLP value in USD E.g.: 0.0016 usd
 
     class Meta:
-        ordering = ('date', )
+        ordering = ('-date', )
 
     def clp_to_usd(self, clp):
         """
@@ -24,7 +24,7 @@ class ClpUsdRate(models.Model):
 
     def save(self, *args, **kwargs):
         if self.clp_rate is not None:
-            self.usd_rate = decimal.Decimal(1)/self.clp_rate
+            self.usd_rate = decimal.Decimal(1)/decimal.Decimal(self.clp_rate)
         super(ClpUsdRate, self).save()
 
     def __str__(self):

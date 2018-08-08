@@ -18,7 +18,7 @@ class RateFetcher:
         self.rates = []
         current_year = datetime.datetime.now().year
         if all_years:
-            self.years = [i for i in range(1990, current_year)]
+            self.years = [i for i in range(1990, current_year+1)]
         else:
             self.years = [current_year]
 

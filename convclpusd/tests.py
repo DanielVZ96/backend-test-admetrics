@@ -1,13 +1,13 @@
 from django.core.management import call_command
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.six import StringIO
-from django.db.models import DateField
 
-from management.commands._sii_rates_scrapper import year_generator, rate_generator
+from rest_framework.test import APITestCase
 
 from .models import ClpUsdRate
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 import decimal
 
 
@@ -48,3 +48,29 @@ class TestUpdateRates(TestCase):
         out = StringIO()
         call_command('updaterates', stdout=out)
         self.assertIn('Successfully updated rates!', out.getvalue())
+
+    def test_saves_all_dates(self):
+        call_command('updaterates', all=True)
+        for year in range(1990, timezone.now().year+1):
+            rates = ClpUsdRate.objects.filter(date__year=year)
+            self.assertAlmostEqual(len(rates), 358, delta=2, msg='Problem with {}'.format(year))
+
+
+# API Tests
+
+class TestConvertRates(APITestCase):
+    def setUp(self):
+        call_command('updaterates', all=True)
+
+    def test_clp_response(self):
+        url = reverse('clp')
+        response = self.client.get(url + '?usd=2&date=20000127')
+        expected_value = 2*516.55
+        self.assertAlmostEqual(float(response.content), expected_value, delta=1)
+
+    def test_usd_response(self):
+        url = reverse('usd')
+        response = self.client.get(url + '?clp=516.55&date=20000127')
+        expected_value = 1
+        self.assertAlmostEqual(float(response.content), expected_value, delta=1)
+

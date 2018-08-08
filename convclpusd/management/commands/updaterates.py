@@ -21,7 +21,7 @@ class Command(BaseCommand):
         if options['all']:
             all = True
             rates = RateFetcher(all_years=True).get_rate_list()
-            with_all = 'all'
+            with_all = 'all '
         else:
             all = False
             rates = RateFetcher(all_years=False).get_rate_list()
