@@ -7,10 +7,10 @@ from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend_test.settings')
 
-app = Celery('backend_test',
+app = Celery('convclpusd',
              broker='redis://localhost:6379',
              backend='redis://localhost:6379',
-             include=['backend_test.tasks'],
+             include=['convclpusd.tasks'],
              timezone='America/Santiago',
              )
 

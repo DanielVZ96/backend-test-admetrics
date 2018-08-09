@@ -1,7 +1,7 @@
 # ConvCLPUSD
 > An API that converts between CLP and USD.
 
-ConCLPUSD is a django service that with a bit of help from webscrapping, mantains and exposes a database of historical
+ConvCLPUSD is a django service that with a bit of help from webscrapping, mantains and exposes a database of historical
 rates data between the chilean peso(CLP) and the US dollar(USD).
 
 It grabs the data every morning at about 9:35 am from the chilean tax administration and updates the database for the 
@@ -21,7 +21,7 @@ $ source <target dir>/bin/activate
 
 - Install requirements:
 
-```sh
+```
 $ pip install -r requirements.txt
 ```
 
@@ -38,33 +38,18 @@ $ python manage.py updaterates -a
 With these instructions you should have a development server ready for running. Deployment options are up to you.
 I recommend running the service with gunicorn, supervisord and nginx, but that's your choice. Have fun!
 
+(In case you want to set up celery with another broker, please refer to the celery documentation)
+
 #### Running celery:
 For the database to update periodically you'll have to get the celery worker running. It'll do most of the work for you.
 You just have to run this in the project root directory:
 ```
-$ celery -A backend_test worker -B -l info
+$ celery -A convclpusd worker -B -l info
 ```
 The -A stands for the app directory in which our celery script lives, in this case backend_test. The worker will
 be launched with the -B and -l info parameters. The -B one will get celery beat running (the program in charge of running 
 the webscapper periodically).
 
-If you want to run the process detached, you can run the following commands:
-```
-# Start
-$ celery multi start worker1 \
-    -A proj \
-    --pidfile="$HOME/run/celery/%n.pid" \
-    --logfile="$HOME/log/celery/%n%I.log"
-
-# Restart    
-$ celery multi restart worker1 \
-    -A proj \
-    --logfile="$HOME/log/celery/%n%I.log" \
-    --pidfile="$HOME/run/celery/%n.pid
-
-# Stop
-$ celery multi stopwait worker1 --pidfile="$HOME/run/celery/%n.pid"
-```
 If you want to learn more about running celery in the background, check out their documentation here:
 http://docs.celeryproject.org/en/latest/userguide/daemonizing.html
 
@@ -112,6 +97,12 @@ the valid value at that moment, which is the last one published.
  
  call_command('updaterates')
  ````
+ 
+## Reusing the API:
+All of the functionality was carefully encapsulated inside the convclpusd app, so if you are in need of adding some 
+usd-clp converter in any other django project, just copy the convclpusd folder, add it into your project's 
+installed_apps and copy the celery settings at the bottom of backend_test.settings over to yours.
+
 
 ## Meta
 
