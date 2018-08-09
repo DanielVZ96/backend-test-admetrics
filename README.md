@@ -9,7 +9,7 @@ current date.
 
 
 ## Installation
-- ####Requirements:
+####Requirements:
 Python 3.53, pip and a bunch of python dependencies included in requirements.txt, such as celery, aiohttp, beautiful soup,
 and of course, django.
 - Create virtualenv (recommended):
@@ -104,7 +104,7 @@ usd-clp converter in any other django project, just copy the convclpusd folder, 
 installed_apps and copy the celery settings at the bottom of backend_test.settings over to yours.
 
 
-## Meta
+## About
 
 Daniel Valenzuela – dsvalenzuela@uc.cl
 
