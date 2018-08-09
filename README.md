@@ -9,9 +9,9 @@ current date.
 
 
 ## Installation
-####Requirements:
-Python 3.53, pip and a bunch of python dependencies included in requirements.txt, such as celery, aiohttp, beautiful soup,
-and of course, django.
+- Requirements:
+Python 3.53, pip and a bunch of python dependencies included in requirements.txt which we'll install now, such as celery, aiohttp, beautifulsoup, and of course, django.
+
 - Create virtualenv (recommended):
 ```
 $ pip install virtualenv
@@ -19,7 +19,7 @@ $ virtualenv <target dir>
 $ source <target dir>/bin/activate
 ```
 
-- Install requirements:
+- Install requirements.txt:
 
 ```
 $ pip install -r requirements.txt
