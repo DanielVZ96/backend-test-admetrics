@@ -61,8 +61,17 @@ http://docs.celeryproject.org/en/latest/userguide/daemonizing.html
 ##### Run development server and use the API: 
 ```
 $ python manage.py runserver
+Performing system checks...
+
+System check identified no issues (0 silenced).
+August 09, 2018 - 13:12:04
+Django version 2.1, using settings 'backend_test.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
 $ curl -G 'http://127.0.0.1:8000/clp?usd=100&date=20001002
 {"date":"2000-10-02T00:00:00","value":56349.0,"exact_date":true}  # returns a json response
+
 $ curl -G 'http://127.0.0.1:8000/usd?clp=10000&date=20050101'
 {"date":"2004-12-30","value":18.0,"exact_date":false}
 ```
