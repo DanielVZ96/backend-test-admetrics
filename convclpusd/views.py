@@ -1,42 +1,75 @@
 import decimal
+
+from abc import ABC
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.renderers import JSONRenderer, StaticHTMLRenderer
 from django.utils import timezone
+
 from .models import ClpUsdRate
 
+class Converter(APIView, ABC):
+    """
+    Abstract class for currency conversion. Subclasses have to define self.currency.
+    Subclasses have to have a <currency>_conversion method available in the ClpUsdRate model.
+    """
 
-# Create your views here.
-class UsdToClp(APIView):
+    #renderer_classes = (JSONRenderer, )
 
-    def get(self, request):
-        """
-         Returns usd value converted into a clp value for a given date. If nothing gets passed in url parameters, send error.
-        """
-        usd = request.GET.get('usd', False)
-        date = request.GET.get('date', False)
-        if usd and date:
-            date = timezone.datetime.strptime(date, '%Y%m%d')
-            usd = decimal.Decimal(usd)
-            rate = ClpUsdRate.objects.get(date__day=date.day, date__month=date.month, date__year=date.year)
-            return Response(rate.usd_to_clp(usd), status=200)
-        else:
-            return Response('No usd or date parameter found.',status=400)
-
-
-class ClpToUsd(APIView):
+    @property
+    def currency(self):
+        try:
+            return self.currency
+        except AttributeError:
+            raise NotImplementedError('Subclasses must set a currency string attribute.')
 
     def get(self, request):
-        """
-         Returns clp value converted into a usd value for a given date. If nothing gets passed in url parameters, send error.
-        """
-        clp = request.GET.get('clp', False)
+        value = request.GET.get(self.currency, False)
         date = request.GET.get('date', False)
-        if clp and date:
-            date = timezone.datetime.strptime(date, '%Y%m%d')
-            clp = decimal.Decimal(clp)
-            rate = ClpUsdRate.objects.get(date__day=date.day, date__month=date.month, date__year=date.year)
-            return Response(rate.clp_to_usd(clp))
+        if value and date:
+            exact = True
+            # Convert variables to date and decimal types
+            try:
+                date = timezone.datetime.strptime(date, '%Y%m%d')
+            except ValueError:
+                return Response("400: Date value doesn't make sense.", status=status.HTTP_400_BAD_REQUEST)
+            value = decimal.Decimal(value)
+
+            # Get rate by date.
+            try:
+                rate = ClpUsdRate.objects.get(date__day=date.day, date__month=date.month, date__year=date.year)
+            except ClpUsdRate.DoesNotExist:
+                return Response("404: we don't have any rate recorded for that date.", status=status.HTTP_404_NOT_FOUND)
+
+            # If rate is None replace with closest past rate.
+            if rate.clp_rate is None:
+                rate = self.__get_past_rate(date)
+                date = rate.date
+                exact = False
+
+            # Get conversion method from model and convert.
+            converter = getattr(rate, '{}_conversion'.format(self.currency))
+            new_value = converter(value)
+
+            data = {
+                'value': new_value,
+                'exact_date': exact,
+                'date': date,
+            }
+
+            return Response(data)
         else:
-            return Response('No clp or date parameter found.',status=400)
+            return Response('No {} or date parameter found.'.format(self.currency), status=400)
+
+    def __get_past_rate(self, date):
+        rates = ClpUsdRate.objects.filter(date__lt=date).exclude(clp_rate=None)
+        return rates.latest(field_name='date')
 
 
+class UsdToClp(Converter):
+    currency = 'usd'
+
+
+class ClpToUsd(Converter):
+    currency = 'clp'

@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'convclpusd',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -112,10 +113,16 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Celery:
+USE_TZ = True
+CELERY_TIMEZONE = 'America/Santiago'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'

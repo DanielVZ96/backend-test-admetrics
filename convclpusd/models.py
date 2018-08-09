@@ -1,5 +1,7 @@
-from django.db import models
 import decimal
+
+from django.db import models
+
 
 
 class ClpUsdRate(models.Model):
@@ -10,13 +12,13 @@ class ClpUsdRate(models.Model):
     class Meta:
         ordering = ('-date', )
 
-    def clp_to_usd(self, clp):
+    def clp_conversion(self, clp):
         """
         Receives clp value, converts it into usd and returns it.
         """
         return decimal.Decimal(decimal.Decimal(clp)*self.usd_rate)  # Eg: x usd = 1 usd * y clp / 538 clp
 
-    def usd_to_clp(self, usd):
+    def usd_conversion(self, usd):
         """
         Receives usd value, converts it into clp and returns it.
         """
