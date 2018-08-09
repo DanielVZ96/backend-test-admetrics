@@ -46,7 +46,7 @@ You just have to run this in the project root directory:
 ```
 $ celery -A convclpusd worker -B -l info
 ```
-The -A stands for the app directory in which our celery script lives, in this case backend_test. The worker will
+The -A stands for the app directory in which our celery script lives, in this case convclpusd. The worker will
 be launched with the -B and -l info parameters. The -B one will get celery beat running (the program in charge of running 
 the webscapper periodically).
 
