@@ -18,6 +18,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        # Parse options and fetch rates accordingly.
         if options['all']:
             all = True
             rates = RateFetcher(all_years=True).get_rate_list()
@@ -26,7 +27,8 @@ class Command(BaseCommand):
             all = False
             rates = RateFetcher(all_years=False).get_rate_list()
             with_all = ''
-
+        
+        # Get all rate objects in a list in order to bulk_create them later
         rate_objects = []
         for rate in rates:
             date, clp_rate = rate
@@ -36,12 +38,13 @@ class Command(BaseCommand):
             else:
                 usd_rate = None
             rate_objects.append(Rate(date=date, clp_rate=clp_rate, usd_rate=usd_rate))
-
+        
+        # Bulk delete objects that will be overridden (using bulk_create has this caveat, but it's still faster.)
         if all:
             Rate.objects.all().delete()
         else:
             Rate.objects.filter(date__year=datetime.datetime.now().year).delete()
-
+        # Bulk_create rate objects.
         Rate.objects.bulk_create(rate_objects)
 
         self.stdout.write(self.style.SUCCESS('Successfully updated {}rates!').format(with_all))
