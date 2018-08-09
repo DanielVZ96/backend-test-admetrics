@@ -92,7 +92,7 @@ the valid value at that moment, which is the last one published.
  This command updates just the current date. If you want to get or update all of the historical rates you have to run
  the command with the -a or --all flag:
  ```
- $ python manage.py uodate -a
+ $ python manage.py updaterates -a
  Successfully updated all rates!
  ```
  Actually, you can also call this command from within any script as long as you import the server settings accordingly.
