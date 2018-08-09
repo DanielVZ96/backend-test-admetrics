@@ -18,8 +18,10 @@ class RateFetcher:
         self.rates = []
         current_year = datetime.datetime.now().year
         if all_years:
+            # Scrap for all years until this one.
             self.years = [i for i in range(1990, current_year+1)]
         else:
+            # Scrap only this year
             self.years = [current_year]
 
     async def year_rate_finder(self, year, response):
@@ -67,6 +69,9 @@ class RateFetcher:
         await self.year_rate_finder(year, response)
 
     async def main(self):
+        """
+        Main async loop. Gathers a ClientSession for each year in the loop.
+        """
         rate_generators = []
         for year in self.years:
             session = aiohttp.ClientSession()
@@ -75,7 +80,7 @@ class RateFetcher:
 
     def get_rate_list(self):
         """
-        Runs the main loop and when finished returns the rates
+        Runs the main loop and when finished returns the rates.
         """
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.main())
